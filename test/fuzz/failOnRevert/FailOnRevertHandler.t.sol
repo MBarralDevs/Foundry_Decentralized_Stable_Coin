@@ -49,15 +49,33 @@ contract FailOnRevertHandler is Test {
 
     //Redeem Collateral handler function
     function redeemCollateral(uint256 collateralSeed, uint256 amountCollateral) public {
-        ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
-        uint256 maxCollateral = dscEngine.getCollateralBalanceOfUser(msg.sender, address(collateral));
-        amountCollateral = bound(amountCollateral, 0, maxCollateral);
+        //We check if our msg.sender has collateral to redeem
+        if (!doesSenderHaveCollateralToRedeem(msg.sender)) {
+            return;
+        }
 
+        ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
+        uint256 maxCollateral = (dscEngine.getCollateralBalanceOfUser(msg.sender, address(collateral)) / 2);
+        amountCollateral = bound(amountCollateral, 0, maxCollateral);
         if (amountCollateral == 0) {
             return;
         }
-        console.log("Amount collateral", amountCollateral);
-        console.log("Max collateral", maxCollateral);
+
+        //But we also need to prevent, depending on the amount of collateral we want to redeem, to go below the minimum health factor
+        //For that we need to calculate our health factor depending on the amount of collateral we want to redeem
+        (uint256 totalDscMinted, uint256 collateralValueInUsd) = dscEngine.getAccountInformations(msg.sender);
+        uint256 minHealthFactor = dscEngine.getMinHealthFactor();
+        //We want our amount of collateral to redeem in USD
+        uint256 amountCollateralToRedeemInUsd = dscEngine.getUsdValue(address(collateral), amountCollateral);
+
+        uint256 healthFactorAfterRedeem =
+            dscEngine.calculateHealthFactor(totalDscMinted, collateralValueInUsd - amountCollateralToRedeemInUsd);
+
+        //We check if our health factor after redeem is above the minimum
+        if (healthFactorAfterRedeem < minHealthFactor) {
+            return;
+        }
+
         vm.prank(msg.sender);
         dscEngine.redeemCollateral(address(collateral), amountCollateral);
     }
@@ -97,12 +115,24 @@ contract FailOnRevertHandler is Test {
         timeMintDscIsCalled++;
     }
 
-    function updateCollateralPrice(uint96 newPrice, uint256 collateralSeed) public {
+    function liquidate(uint256 collateralSeed, address userToBeLiquidated, uint256 debtToCover) public {
+        uint256 minHealthFactor = dscEngine.getMinHealthFactor();
+        uint256 userHealthFactor = dscEngine.getHealthFactor(userToBeLiquidated);
+        if (userHealthFactor >= minHealthFactor) {
+            return;
+        }
+        debtToCover = bound(debtToCover, 1, uint256(type(uint96).max));
+        ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
+        vm.prank(msg.sender);
+        dscEngine.liquidate(address(collateral), userToBeLiquidated, debtToCover);
+    }
+
+    /*function updateCollateralPrice(uint96 newPrice, uint256 collateralSeed) public {
         int256 newPriceInt = int256(uint256(newPrice));
         ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
         MockV3Aggregator priceFeed = MockV3Aggregator(dscEngine.getCollateralTokenPriceFeed(address(collateral)));
         priceFeed.updateAnswer(newPriceInt);
-    }
+    }*/
 
     /// Helper Functions
     function _getCollateralFromSeed(uint256 collateralSeed) private view returns (ERC20Mock) {
@@ -111,6 +141,15 @@ contract FailOnRevertHandler is Test {
         } else {
             return wbtc;
         }
+    }
+
+    function doesSenderHaveCollateralToRedeem(address sender) private view returns (bool) {
+        for (uint256 i = 0; i < usersWithCollateralDeposited.length; i++) {
+            if (usersWithCollateralDeposited[i] == sender) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function getTimeMintDscIsCalled() public view returns (uint256) {

@@ -191,6 +191,16 @@ contract DSCEngine is ReentrancyGuard {
         _revertIfHealthFactorIsBroken(msg.sender);
     }
 
+    //We create a public function to be able to test our redeemCollateral in our fuzz tests without having it reverting for broken health factor
+    function redeemCollateralWithoutCheckingHealthFactor(address tokenCollateralAddress, uint256 amountCollateral)
+        public
+        moreThanZero(amountCollateral)
+        nonReentrant
+    {
+        _redeemCollateral(msg.sender, msg.sender, tokenCollateralAddress, amountCollateral);
+        //_revertIfHealthFactorIsBroken(msg.sender);
+    }
+
     /*
     @notice follows CEI
     @param amountDscToMint amount of our stable coin to mint
