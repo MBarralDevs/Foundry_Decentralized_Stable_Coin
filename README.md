@@ -77,18 +77,19 @@ Randomized inputs for collateral deposits, minting, redemptions
 
 Run tests with:
 
-bash
-Copy
-Edit
+```
 forge test
-🚀 Deployment
-Local (Anvil)
+```
+
+## 🚀 Deployment
+
+## Local (Anvil)
+
 Deploys with mocks for WETH/WBTC and price feeds:
 
-bash
-Copy
-Edit
+```
 forge script script/DeployDSC.s.sol --fork-url http://127.0.0.1:8545 --broadcast
+```
 Sepolia Testnet
 Uses real ERC20 test tokens & Chainlink price feeds.
 Requires .env with PRIVATE_KEY.
