@@ -32,16 +32,20 @@ The stablecoin is always backed by **more USD value in collateral** than the tot
 
 ```mermaid
 graph TD
-    U[User] --> |Deposit WETH/WBTC| E[DSCEngine]
-    U --> |Mint DSC| E
-    U --> |Burn DSC| E
-    U --> |Redeem Collateral| E
-    E --> |Health Factor Enforcement| HF[Health Factor >= 1]
-    E --> |Price Feeds| O[OracleLib -> Chainlink Aggregators]
-    E --> |Transfers Ownership| DSC[DecentralizedStableCoin]
-    L[Liquidator] --> |Covers Debt + Liquidates| E
-Core Contracts
+    U[User] -->|Deposit WETH/WBTC| E[DSCEngine]
+    U -->|Mint DSC| E
+    U -->|Burn DSC| E
+    U -->|Redeem Collateral| E
+    E -->|Health Factor Enforcement| HF[Health Factor >= 1]
+    E -->|Price Feeds| O[OracleLib + Chainlink]
+    E -->|Controls| DSC[DecentralizedStableCoin]
+    L[Liquidator] -->|Covers Debt + Liquidates| E
 
+```
+
+---
+
+Core Contracts
 DecentralizedStableCoin.sol → ERC20 stablecoin implementation
 
 DSCEngine.sol → Core logic: collateral management, minting, burning, liquidations
