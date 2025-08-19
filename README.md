@@ -45,19 +45,16 @@ graph TD
 
 ---
 
-Core Contracts
-DecentralizedStableCoin.sol → ERC20 stablecoin implementation
+## Core Contracts
+- **DecentralizedStableCoin.sol** → ERC20 stablecoin implementation
+- **DSCEngine.sol** → Core logic: collateral management, minting, burning, liquidations
+- **OracleLib.sol** → Price safety wrapper for Chainlink-style oracles
 
-DSCEngine.sol → Core logic: collateral management, minting, burning, liquidations
+**Deployment**
+- **DeployDSC.s.sol** → Deploys DSC + DSCEngine + configures collateral
+- **HelperConfig.s.sol** → Network-aware deployment (local mocks vs Sepolia addresses)
 
-OracleLib.sol → Price safety wrapper for Chainlink-style oracles
-Deployment
-
-DeployDSC.s.sol → Deploys DSC + DSCEngine + configures collateral
-
-HelperConfig.s.sol → Network-aware deployment (local mocks vs Sepolia addresses)
-
-🧪 Testing
+## 🧪 Testing
 The project uses Foundry’s forge-std for advanced testing.
 
 Unit Tests
