@@ -57,31 +57,25 @@ graph TD
 ## 🧪 Testing
 The project uses Foundry’s forge-std for advanced testing.
 
-Unit Tests
-DSCEngine.t.sol → Minting, collateral deposit, liquidation logic
+## Unit Tests
+- **DSCEngine.t.sol** → Minting, collateral deposit, liquidation logic
+- **DecentralizedStableCoin.t.sol** → ERC20 compliance, mint/burn permissions
+- **OracleLib.t.sol** → Oracle edge cases & reverts
 
-DecentralizedStableCoin.t.sol → ERC20 compliance, mint/burn permissions
+## Mock Tests
+- **MockV3Aggregator.t.sol** → Price feed manipulation
+- **ERC20Mock.t.sol** → Collateral token simulations
 
-OracleLib.t.sol → Oracle edge cases & reverts
-
-Mock Tests
-MockV3Aggregator.t.sol → Price feed manipulation
-
-ERC20Mock.t.sol → Collateral token simulations
-
-Fuzz Tests
+## Fuzz Tests
 Randomized inputs for collateral deposits, minting, redemptions
 
-Invariant Tests
+## Invariant Tests
 Located in /test/fuzz/failOnRevert:
 
-FailOnRevertHandler.t.sol → Defines actions: mint, deposit, redeem, burn, liquidate
-
-FailOnRevertInvariant.t.sol → Ensures:
-
-Protocol must always have more collateral value than DSC supply
-
-Getters cannot revert
+- **FailOnRevertHandler.t.sol** → Defines actions: mint, deposit, redeem, burn, liquidate
+- **FailOnRevertInvariant.t.sol** → Ensures:
+        - Protocol must always have more collateral value than DSC supply
+        - Getters cannot revert
 
 Run tests with:
 
