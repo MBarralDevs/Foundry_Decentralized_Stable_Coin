@@ -57,20 +57,20 @@ graph TD
 ## 🧪 Testing
 The project uses Foundry’s forge-std for advanced testing.
 
-## Unit Tests
+**Unit Tests**
 - **DSCEngine.t.sol** → Minting, collateral deposit, liquidation logic
 - **DecentralizedStableCoin.t.sol** → ERC20 compliance, mint/burn permissions
 - **OracleLib.t.sol** → Oracle edge cases & reverts
 
-## Mock Tests
+**Mock Tests**
 - **MockV3Aggregator.t.sol** → Price feed manipulation
 - **ERC20Mock.t.sol** → Collateral token simulations
 
-## Fuzz Tests
+**Fuzz Tests**
 Randomized inputs for collateral deposits, minting, redemptions
 
-## Invariant Tests
-## Located in /test/fuzz/failOnRevert:
+**Invariant Tests**
+Located in /test/fuzz/failOnRevert:
 
 - **FailOnRevertHandler.t.sol** → Defines actions: mint, deposit, redeem, burn, liquidate
 - **FailOnRevertInvariant.t.sol** → Ensures: Protocol must always have more collateral value than DSC supply | Getters cannot revert
@@ -83,49 +83,42 @@ forge test
 
 ## 🚀 Deployment
 
-## Local (Anvil)
+**Local (Anvil)**
 
 Deploys with mocks for WETH/WBTC and price feeds:
 
 ```
 forge script script/DeployDSC.s.sol --fork-url http://127.0.0.1:8545 --broadcast
 ```
-Sepolia Testnet
+
+**Sepolia Testnet**
+
 Uses real ERC20 test tokens & Chainlink price feeds.
 Requires .env with PRIVATE_KEY.
 
-bash
-Copy
-Edit
+```
 forge script script/DeployDSC.s.sol --rpc-url $SEPOLIA_RPC_URL --broadcast --verify
-🔐 Security Model
-Overcollateralization → Health factor enforces that collateral value > debt
+```
 
-Price Oracles → Chainlink-style with sanity checks
+## 🔐 Security Model
 
-Liquidations → Incentivized to restore solvency
+- **Overcollateralization** → Health factor enforces that collateral value > debt
+- **Price Oracles** → Chainlink-style with sanity checks
+- **Liquidations** → Incentivized to restore solvency
+- **Invariant Testing** → System-wide guarantees (collateral value ≥ total DSC)
 
-Invariant Testing → System-wide guarantees (collateral value ≥ total DSC)
+## 📈 Future Improvements
+- Governance for collateral onboarding
+- Support for more collateral assets
+- Peg stability mechanisms (AMMs, interest rates)
+- Frontend for user interaction
+- Formal verification
 
-📈 Future Improvements
-Governance for collateral onboarding
+## 🛠️ Tech Stack
+- Solidity 0.8.18
+- Foundry (forge, cast, anvil)
+- Chainlink Oracles
+- OpenZeppelin ERC20
 
-Support for more collateral assets
-
-Peg stability mechanisms (AMMs, interest rates)
-
-Frontend for user interaction
-
-Formal verification
-
-🛠️ Tech Stack
-Solidity 0.8.18
-
-Foundry (forge, cast, anvil)
-
-Chainlink Oracles
-
-OpenZeppelin ERC20
-
-📜 License
+## 📜 License
 MIT © 2025
