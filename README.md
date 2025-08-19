@@ -47,7 +47,6 @@ DecentralizedStableCoin.sol → ERC20 stablecoin implementation
 DSCEngine.sol → Core logic: collateral management, minting, burning, liquidations
 
 OracleLib.sol → Price safety wrapper for Chainlink-style oracles
-
 Deployment
 
 DeployDSC.s.sol → Deploys DSC + DSCEngine + configures collateral
